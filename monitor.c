@@ -1147,7 +1147,6 @@ int load_map_file (const char *name)
 		id_ptr = strtok (id_ptr, " \t\n");
 		if (((*id_ptr == 'l') || (*id_ptr == 's')) && (id_ptr[1] == '_'))
 			continue;
-		++id_ptr;
 
 		file_ptr = strtok (NULL, " \t\n");
 
