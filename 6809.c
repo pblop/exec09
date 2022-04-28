@@ -820,7 +820,7 @@ static void daa (void)
     res += 0x06;
   if (msn > 0x80 && lsn > 0x09)
     res += 0x60;
-  if (msn > 0x90 || (C != 0))
+  else if (msn > 0x90 || (C != 0))
     res += 0x60;
 
   C |= (res & 0x100);
