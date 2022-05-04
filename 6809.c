@@ -818,9 +818,7 @@ static void daa (void)
 
   if (lsn > 0x09 || (H & 0x10))
     res += 0x06;
-  if (msn > 0x80 && lsn > 0x09)
-    res += 0x60;
-  else if (msn > 0x90 || (C != 0))
+  if (msn > 0x80 && lsn > 0x09 || msn > 0x90 || C != 0)
     res += 0x60;
 
   C |= (res & 0x100);
