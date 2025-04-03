@@ -3049,3 +3049,11 @@ void print_regs (void)
    printf (" A: 0x%02X      B: 0x%02X    [D]: 0x%04X   CC: %s\n",
             get_a(), get_b(), read16(get_d()), flags );
 }
+
+void print_regs_json (FILE *f)
+{
+   fprintf(f, "{\"x\":%d,\"y\":%d,\"pc\":%d,\"u\":%d,\"s\":%d,\"a\":%d,"
+              "\"b\":%d,\"cc\":%d,\"dp\":%d}",
+           get_x(), get_y(), get_pc(), get_u(), get_s(), get_a(), get_b(),
+           get_cc(), get_dp());
+}

@@ -1,6 +1,10 @@
 #include "6809.h"
 #include "monitor.h"
 #include "machine.h"
+#if 0
+#include <cstdio>
+#endif
+#include <stdio.h>
 #include <sys/errno.h>
 #include <unistd.h>
 #ifdef HAVE_TERMIOS_H
@@ -946,6 +950,61 @@ void cmd_regs (void)
    print_regs();
 }
 
+void cmd_json (void)
+{
+    #define DUMPFILE "regdump.json"
+    FILE *fp;
+    print_regs_json(stdout);
+    printf("\n");
+    fp = fopen(DUMPFILE, "r+");
+    if (fp == 0)
+    {
+      fp = fopen(DUMPFILE, "w+");
+      if (fp == 0)
+      {
+        fprintf(stderr, "can't open %s\n", DUMPFILE);
+        return;
+      }
+    }
+    fseek(fp, 0, SEEK_END);
+    int sz = ftell(fp);
+    if (sz == 0)
+    {
+      // Ensure the file is valid json by writing the empty array ({})
+      fprintf(fp, "[]");
+    }
+
+    // remove the last ], write a comma (if needed), a json object, and re-add
+    // the ]
+    
+    // Position the cursor on the last non-newline char.
+    fseek(fp, -1, SEEK_END);
+    while(fgetc(fp) == '\n')
+      fseek(fp, -2, SEEK_CUR); // -1 for going 1 before, -1 for the getc
+    fseek(fp, -1, SEEK_CUR); // -1 for the fgetc
+    
+    // I assume the closing ] is the last char, so we go one before (which will
+    // be: [ if the file has no data, or } if the file has one object before
+    fseek(fp, -1, SEEK_CUR);
+    // If theres an object, we need to place a comma
+    if (fgetc(fp) == '}')
+    {
+      fseek(fp, 0, SEEK_CUR); // need to flush between reads and writes
+      fputc(',', fp);
+    } 
+    fseek(fp, 0, SEEK_CUR); // need to flush between reads and writes
+
+
+
+    // Now, we write our object
+    print_regs_json(fp);
+
+    // We make the json valid again
+    fputc(']', fp);
+    fclose(fp);
+    #undef DUMPFILE
+}
+
 void cmd_pc(void)
 {
 	char* arg = getarg();
@@ -1107,6 +1166,8 @@ struct command_name
       "Run a command script" },
    { "regs", "regs", cmd_regs,
       "Show all CPU registers" },
+   { "j", "json", cmd_json,
+		"Show all CPU registers as JSON" },
    { "vars", "vars", cmd_vars,
       "Show all program variables" },
    { "runfor", "runfor", cmd_runfor,
