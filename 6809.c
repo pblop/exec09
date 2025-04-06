@@ -823,7 +823,7 @@ static void daa (void)
 
   C |= (res & 0x100);
   A = N = Z = res &= 0xff;
-  OV = 0;			/* fix this */
+  // OV is undefined, so we don't set it :)
 
   cpu_clk -= 2;
 }
