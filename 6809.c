@@ -172,7 +172,7 @@ static inline void change_pc (unsigned newPC)
 		fprintf (stderr, "-> %s\n", monitor_addr_name (newPC));
 	}
 #endif
-  PC = newPC;
+  PC = newPC % 0x10000;
 }
 
 static inline unsigned imm_byte (void)
